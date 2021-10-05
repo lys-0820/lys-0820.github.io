@@ -1,0 +1,149 @@
+<!DOCTYPE html> 
+<html>
+<head> 
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" /> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<title>Hello, World</title> 
+<style type="text/css"> 
+html{height:100%} 
+body{height:100%;margin:0px;padding:0px} 
+#container{height:100%} 
+</style> 
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&type=webgl&ak=2dtBne4oAowpPu2peLvon11jkYYeb28k">
+</script>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js">百度的在线jQuery库
+</script>
+</head> 
+  
+<body> 
+<div id="container"></div>
+<script type="text/javascript">
+var map = new BMapGL.Map("container");
+// 创建地图实例 
+var point = new BMapGL.Point(116.404, 39.915);
+var point_bhy = new BMapGL.Point(116.413,39.930);
+var point_nl = new BMapGL.Point(116.409,39.944);
+var point_54 = new BMapGL.Point(116.417,39.931);
+var point_bh = new BMapGL.Point(116.407,39.939);
+var point_hh = new BMapGL.Point(116.393,39.949);
+// 创建点坐标 
+map.centerAndZoom(point, 15);
+// 初始化地图，设置中心点坐标和地图级别 
+/*map.addEventListener('click', function(e) {
+    alert('点击的经纬度：' + e.latlng.lng + ', ' + e.latlng.lat);
+    var mercator = map.lnglatToMercator(e.latlng.lng, e.latlng.lat);
+    alert('点的墨卡托坐标：' + mercator[0] + ', ' + mercator[1]);
+});*/
+var marker = new BMapGL.Marker(point);
+var marker_nl = new BMapGL.Marker(point_nl);
+var marker_bhy = new BMapGL.Marker(point_bhy);
+var marker_54 = new BMapGL.Marker(point_54);
+var marker_bh = new BMapGL.Marker(point_bh);
+var marker_hh = new BMapGL.Marker(point_hh);
+map.addOverlay(marker);
+map.addOverlay(marker_nl);
+map.addOverlay(marker_bhy);
+map.addOverlay(marker_54);
+map.addOverlay(marker_bh);
+map.addOverlay(marker_hh);
+// 创建信息窗口
+var opts = {
+    width: 200,
+    height: 100,
+    title: '故宫博物院'
+};
+var opts1 = {
+    width: 20,
+    height: 50,
+    title: '南锣鼓巷'
+};
+var opts2 = {
+    width: 20,
+    height: 50,
+    title: '皇城根遗址公园'
+};
+var opts3 = {
+    width: 20,
+    height: 80,
+    title: '五四大街'
+};
+var opts4 = {
+    width: 20,
+    height: 50,
+    title: '北河胡同'
+};
+var opts5 = {
+    width: 20,
+    height: 50,
+    title: '后海'
+};
+var infoWindow = new BMapGL.InfoWindow('地址：北京市东城区王府井大街88号乐天银泰百货八层', opts);
+var infoWindow1 = new BMapGL.InfoWindow('做一个合格的游客，藏身于熙攘的人群中。', opts1);
+var infoWindow2 = new BMapGL.InfoWindow('躲在城市的绿岛里，听不远处的车流声。', opts2);
+var infoWindow3 = new BMapGL.InfoWindow('深夜的五四大街，有轰鸣的修路机，飞驰而过的摩托和小巷的蝉鸣。', opts3);
+var infoWindow4 = new BMapGL.InfoWindow('雨后的清晨，沿着胡同一直走，途经通惠河，秋天在这里。', opts4);
+var infoWindow5 = new BMapGL.InfoWindow('后海边上，几个大爷在吵架，听得津津有味。', opts5);
+// 点标记添加点击事件
+marker.addEventListener('click', function () {
+    map.openInfoWindow(infoWindow, point); // 开启信息窗口
+});
+marker_nl.addEventListener('click', function () {
+    map.openInfoWindow(infoWindow1, point_nl);
+    startSoundsByJs(1)
+});
+marker_bhy.addEventListener('click', function () {
+    map.openInfoWindow(infoWindow2, point_bhy);
+    startSoundsByJs(2)
+});
+marker_54.addEventListener('click', function () {
+    map.openInfoWindow(infoWindow3, point_54);
+    startSoundsByJs(3)
+});
+marker_bh.addEventListener('click', function () {
+    map.openInfoWindow(infoWindow4, point_bh);
+    startSoundsByJs(4)
+});
+marker_hh.addEventListener('click', function () {
+    map.openInfoWindow(infoWindow5, point_hh);
+    startSoundsByJs(5)
+});
+</script> 
+<audio id="audio_nl" src="/Users/lys/Desktop/audio/南锣鼓巷.m4a"></audio>
+<audio id="audio_bhy" src="/Users/lys/Desktop/audio/北河沿大街.m4a"></audio>
+<audio id="audio_54" src="/Users/lys/Desktop/audio/54mix.mp3"></audio>
+<audio id="audio_bh" src="/Users/lys/Desktop/audio/bh.mp3"></audio>
+<audio id="audio_hh" src="/Users/lys/Desktop/audio/后海.mp3"></audio>
+</body> 
+</html>
+<script>
+    function startSoundsByJs(i){
+        switch(i){
+            case 1:
+                var myMp3=document.getElementById("audio_nl");
+                playAudio(audio_nl);
+                break;
+            case 2:
+                var myMp3=document.getElementById("audio_bhy");
+                playAudio(audio_bhy);
+                break;
+            case 3:
+                var myMp3=document.getElementById("audio_54");
+                playAudio(audio_54);
+                break;
+            case 4:
+                var myMp3=document.getElementById("audio_bh");
+                playAudio(audio_bh);
+                break; 
+            case 5:
+                var myMp3=document.getElementById("audio_hh");
+                playAudio(audio_hh);
+                break;           
+        } 
+    }
+    function playAudio(x){
+        if(x.paused)
+                    x.play();
+                else
+                    x.pause();
+    }
+</script>

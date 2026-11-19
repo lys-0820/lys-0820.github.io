@@ -1,13 +1,15 @@
 name: Publish portfolio
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 concurrency:
   group: portfolio-pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -16,46 +18,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Import and preserve portfolio files
-        shell: bash
+      - name: Prepare portfolio
         run: |
-          python3 - <<'PY'
-          import concurrent.futures, pathlib, re, time, urllib.request
-          origin = 'https://yingshi-portfolio.silhouette0280.chatgpt.site/'
-          def fetch(path):
-              for attempt in range(4):
-                  try:
-                      req = urllib.request.Request(origin + path, headers={'User-Agent': 'Portfolio-Migration/1.0'})
-                      with urllib.request.urlopen(req, timeout=60) as response:
-                          return response.read()
-                  except Exception:
-                      if attempt == 3: raise
-                      time.sleep(2 ** attempt)
-          html = fetch('').decode('utf-8')
-          assert 'work-vidu' in html and 'work-aidraw' in html, 'Unexpected source page'
-          paths = sorted(set(re.findall(r'assets/[\w.-]+', html)))
-          assert len(paths) >= 195, 'Missing portfolio assets'
-          out = pathlib.Path('_site'); (out / 'assets').mkdir(parents=True, exist_ok=True)
-          def download(path):
-              data = fetch(path)
-              assert data, 'Empty asset: ' + path
-              (out / path).write_bytes(data)
-              dest = pathlib.Path(path); dest.parent.mkdir(parents=True, exist_ok=True)
-              dest.write_bytes(data)
-          with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
-              list(pool.map(download, paths))
-          for root in (out, pathlib.Path('.')):
-              (root / 'index.html').write_text(html, encoding='utf-8')
-              (root / '.nojekyll').touch()
-          print('Saved', len(paths), 'assets and index.html')
-          PY
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html assets .nojekyll
-          if ! git diff --cached --quiet; then
-            git commit -m 'Import Yingshi portfolio with work projects and photography'
-            git push
-          fi
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp -R assets _site/assets
+          touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -86,7 +86,7 @@
 .ls:focus-visible{outline:none}
 .ls:focus-visible .mf{box-shadow:inset 0 0 0 2px #56693f}
 .proto[data-open] .ls:not(.in){opacity:.5;filter:blur(3px) drop-shadow(0 1.2cqw 2cqw rgb(30 34 20/.12))}
-.ls.far-b{filter:blur(var(--fb)) drop-shadow(0 1.2cqw 2cqw rgb(30 34 20/.2))}
+.proto .ls.in{transition-property:opacity}
 .proto .plab{transition:opacity .24s ease}
 .proto[data-open="0"] .p0,.proto[data-open="1"] .p1,.proto[data-open="2"] .p2,.proto.dark .plab{opacity:0}
 .night{position:absolute;inset:0;z-index:90;background:radial-gradient(75% 75% at 50% 40%,rgb(43 44 37/.97),rgb(22 24 19/.98) 72%);opacity:0;pointer-events:none;transition:opacity .2s cubic-bezier(.215,.61,.355,1)}
@@ -197,7 +197,7 @@ const LAY=(()=>{const cnt=[0,0,0],OX=[-1.6,1.4,-.4,2,-1.2],OY=[1.2,-1.4,.6,-.4,1
   root.insertBefore(el,night);
   const pile={x:L.px,y:L.py,r:L.pr,s:.96},spread={x:it.x,y:it.y,r:it.r,s:1};
   return {i,it,el,g:L.g,k:L.k,pile,spread,cur:{...pile},vel:{x:0,y:0,r:0,s:0},tgt:{...pile},next:null,at:0,
-   per:4.6+f*2.6,ph:h*Math.PI*2,ax:(f-.5)*1.6,ay:-(1.1+h*.8),ar:(h<.5?-1:1)*(2+h*2.5),bw:1,fb:it.b||0};
+   per:8+f*4,ph:h*Math.PI*2,ax:(f-.5)*1.6,ay:-(1.1+h*.8),ar:(h<.5?-1:1)*(2+h*2.5),bw:1};
  });
  const N=[0,1,2].map(g=>S.filter(s=>s.g===g).length);
  // area each group covers when open (pile plus spread), in % of the frame; leaving it closes the pile
@@ -213,11 +213,11 @@ const LAY=(()=>{const cnt=[0,0,0],OX=[-1.6,1.4,-.4,2,-1.2],OY=[1.2,-1.4,.6,-.4,1
    else if(open===s.g) t={...s.spread,s:hover===s.i?1.12:1};
    else t={...s.pile};
    let d=0;
-   if(stagger&&stagger.includes(s.g)) d=open===s.g?s.k*28:(N[s.g]-1-s.k)*18;
+   if(stagger&&stagger.includes(s.g)) d=open===s.g?s.k*42:(N[s.g]-1-s.k)*30;
    s.next=t;s.at=now+d;
    s.el.classList.toggle('in',open===s.g||detail===s.i);
    s.el.style.zIndex=detail===s.i?100:hover===s.i?70:open===s.g?20+s.i:s.i+1;
-   s.el.classList.toggle('far-b',open===s.g&&detail==null&&s.fb>0);
+
   });
   if(open==null)delete root.dataset.open;else root.dataset.open=open;
   if(reduce.matches)S.forEach(s=>{s.tgt=s.next;s.next=null;s.cur={...s.tgt};s.vel={x:0,y:0,r:0,s:0};});
@@ -231,7 +231,7 @@ const LAY=(()=>{const cnt=[0,0,0],OX=[-1.6,1.4,-.4,2,-1.2],OY=[1.2,-1.4,.6,-.4,1
  function hide(){if(detail==null)return;const i=detail;detail=null;root.classList.remove('dark');retarget();S[i].el.focus({preventScroll:true});}
 
  // springs: position and rotation k=170, c=22 (slightly under critical, so they settle softly); scale k=260, c=30
- const K=170,C=22,KS=260,CS=30;
+ const K=70,C=16.5,KS=95,CS=19.5;
  function step(now){
   raf=0;const dt=Math.min(.034,(now-last)/1000);last=now;const t=now/1000;let moving=false;
   S.forEach(s=>{
@@ -250,7 +250,7 @@ const LAY=(()=>{const cnt=[0,0,0],OX=[-1.6,1.4,-.4,2,-1.2],OY=[1.2,-1.4,.6,-.4,1
   if(moving&&visible)raf=requestAnimationFrame(step);
  }
  function kick(){if(!raf&&visible){last=performance.now();raf=requestAnimationFrame(step);}}
- const size=()=>{const r=root.getBoundingClientRect();Wd=r.width;Hd=r.height;S.forEach(s=>{if(s.fb)s.el.style.setProperty('--fb',(s.fb*Wd/100).toFixed(1)+'px')});kick();};
+ const size=()=>{const r=root.getBoundingClientRect();Wd=r.width;Hd=r.height;kick();};
  new ResizeObserver(size).observe(root);size();
  new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible)kick();}).observe(root);
  document.addEventListener('visibilitychange',()=>{visible=!document.hidden;if(visible)kick();});
